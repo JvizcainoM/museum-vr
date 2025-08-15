@@ -1,24 +1,9 @@
-using UnityEngine;
-
-public class Grabbable : MonoBehaviour
+public class Grabbable : InteractableObject
 {
-    public bool IsGrabbed { get; private set; }
+    public bool IsGrabbed { get; set; }
 
-    public void Grab()
+    public override void Accept(IInteraction interaction)
     {
-        if (IsGrabbed) return;
-        IsGrabbed = true;
-
-        var infoDisplay = GetComponent<InfoDisplay>();
-        if (infoDisplay != null)
-            infoDisplay.ShowInfo();
-    }
-
-    public void Drop()
-    {
-        if (!IsGrabbed) return;
-        IsGrabbed = false;
-
-        CanvasInfoDisplayer.Instance?.Hide();
+        interaction?.PerformOn(this);
     }
 }

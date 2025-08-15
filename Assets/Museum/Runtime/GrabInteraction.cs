@@ -1,57 +1,22 @@
 using UnityEngine;
 
-public class GrabInteraction : MonoBehaviour
+[CreateAssetMenu(fileName = "GrabInteraction", menuName = "Museum/Interactions/Grab Interaction")]
+public class GrabInteraction : ScriptableObject, IInteraction
 {
-    [SerializeField] private float interactionRadius = 0.25f;
+    public FixedJoint Holder { get; set; }
 
-    private int _layerMask;
-    private Grabbable _grabbable;
-    private FixedJoint _holder;
-    private readonly Collider[] _colliders = new Collider[1];
-
-    private void Awake()
+    public void PerformOn(IInteractable interactable)
     {
-        _holder = GetComponentInChildren<FixedJoint>();
-    }
+        if (interactable is not Grabbable grabbable)
+            return;
 
-    private void Start()
-    {
-        _layerMask = LayerMask.GetMask("Things", "Treasures");
-    }
+        if (grabbable.IsGrabbed) return;
 
-    public void Interact()
-    {
-        var size = Physics.OverlapSphereNonAlloc(_holder.transform.position, interactionRadius, _colliders, _layerMask);
-        Debug.Log(size);
-        if (size == 0) return;
-
-        _grabbable = _colliders[0].GetComponent<Grabbable>();
-        if (_grabbable == null) return;
-        if (_grabbable.IsGrabbed) return;
-
-        _grabbable.Grab();
-        var rb = _grabbable.GetComponent<Rigidbody>();
+        grabbable.IsGrabbed = true;
+        var rb = grabbable.GetComponent<Rigidbody>();
         rb.isKinematic = false;
-        _holder.connectedBody = rb;
+        Holder.connectedBody = rb;
         rb.interpolation = RigidbodyInterpolation.Interpolate;
         rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
     }
-#if UNITY_EDITOR
-    private void OnValidate()
-    {
-        if (interactionRadius < 0.01f)
-            interactionRadius = 0.01f;
-        if (_holder == null)
-            _holder = GetComponentInChildren<FixedJoint>();
-    }
-
-    private void OnDrawGizmosSelected()
-    {
-        if (_holder == null) return;
-        Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(_holder.transform.position, interactionRadius);
-        Gizmos.DrawLine(_holder.transform.position,
-            _holder.transform.position + _holder.transform.forward * interactionRadius);
-    }
-#endif
 }

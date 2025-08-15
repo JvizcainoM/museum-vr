@@ -13,13 +13,13 @@ namespace Museum.Runtime
         {
 #if UNITY_EDITOR && !UNITY_ANDROID
 
-            if (Mouse.current.leftButton.wasPressedThisFrame)
+            if (Keyboard.current.fKey.wasPressedThisFrame)
             {
                 Debug.Log("Secondary Index Trigger Pressed");
                 onTriggerPressed?.Invoke();
             }
 
-            if (Mouse.current.rightButton.wasReleasedThisFrame)
+            if (Keyboard.current.rKey.wasPressedThisFrame)
             {
                 Debug.Log("Secondary Index Trigger Released");
                 onTriggerReleased?.Invoke();

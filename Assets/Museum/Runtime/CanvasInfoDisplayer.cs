@@ -1,27 +1,22 @@
-using Interpolations.Runtime.Core;
+using DG.Tweening;
 using TMPro;
 using UnityEngine;
 
 public class CanvasInfoDisplayer : MonoBehaviour
 {
-    [SerializeField] private TMP_Text infoText;
-    [SerializeField] private CanvasGroup canvasGroup;
-    [SerializeField] private Transform pivot;
+    [SerializeField] private TMP_Text descriptionText;
     public static CanvasInfoDisplayer Instance { get; private set; }
-
-    private FloatInterpolated _fadeAlpha;
-    private Vector3Interpolated _fadePosition;
+    private CanvasGroup _canvasGroup;
+    private VideoPlayerController _videoPlayer;
 
     private void Awake()
     {
         if (Instance == null)
         {
             Instance = this;
-            _fadeAlpha = new FloatInterpolated(0f);
-            _fadeAlpha.SetEasing(Easings.EaseOutCubic).SetDuration(0.5f);
-            _fadePosition = new Vector3Interpolated(pivot.position);
-            _fadePosition.SetEasing(Easings.EaseOutCubic).SetDuration(0.5f);
-            canvasGroup.alpha = 0f;
+            _canvasGroup = GetComponent<CanvasGroup>();
+            _videoPlayer = GetComponentInChildren<VideoPlayerController>();
+            _canvasGroup.alpha = 0f;
         }
         else
         {
@@ -29,24 +24,18 @@ public class CanvasInfoDisplayer : MonoBehaviour
         }
     }
 
-    private void Update()
+    public void Display(string text)
     {
-        canvasGroup.alpha = _fadeAlpha.GetValue();
-    }
-
-    private void LateUpdate()
-    {
-        pivot.position = _fadePosition.GetValue();
-    }
-
-    public void DisplayInfo(string text)
-    {
-        infoText.text = text;
-        _fadeAlpha.SetValue(1f);
+        descriptionText.text = text;
+        _canvasGroup.DOFade(1f, 0.5f)
+            .SetEase(Ease.OutCubic)
+            .OnComplete(() => { _videoPlayer.CanUse = true; });
     }
 
     public void Hide()
     {
-        _fadeAlpha.SetValue(0f);
+        _videoPlayer.CanUse = false;
+        _canvasGroup.DOFade(0f, 0.5f)
+            .SetEase(Ease.OutCubic);
     }
 }

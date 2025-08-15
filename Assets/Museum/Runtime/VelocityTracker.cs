@@ -11,6 +11,7 @@ public class VelocityTracker : MonoBehaviour
     private void Start()
     {
         _lastPosition = transform.position;
+        _lastRotation = transform.rotation;
     }
 
     private void Update()
@@ -20,7 +21,9 @@ public class VelocityTracker : MonoBehaviour
         _lastPosition = currentPosition;
 
         var currentRotation = transform.rotation;
-        AngularVelocity = (currentRotation * Quaternion.Inverse(_lastRotation)).eulerAngles / Time.deltaTime;
+        var deltaRotation = currentRotation * Quaternion.Inverse(_lastRotation);
+        deltaRotation.ToAngleAxis(out var angle, out var axis);
+        AngularVelocity = axis * (Mathf.Deg2Rad * angle) / Time.deltaTime;
         _lastRotation = currentRotation;
     }
 }
