@@ -1,0 +1,11 @@
+{
+  "name": "com.jv.interpolations",
+  "version": "1.0.0",
+  "displayName": "Interpolations",
+  "description": "My Unity package for smooth interpolations.",
+  "unity": "2020.3",
+  "author": {
+    "name": "Jorge Vizcaíno",
+    "email": "jiscvm@proton.me"
+  }
+}
